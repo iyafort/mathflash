@@ -65595,10 +65595,10 @@ if(j>100)break
 i=a1.a
 if(i.x){n=B.av.fQ(B.c.P(Math.pow(10,i.f))*2)-B.c.P(Math.pow(10,a1.a.f))
 m=B.av.fQ(B.c.P(Math.pow(10,a1.a.r))*2)-B.c.P(Math.pow(10,a1.a.r))}else{n=B.av.fQ(B.c.P(Math.pow(10,i.f)))
-m=B.av.fQ(B.c.P(Math.pow(10,a1.a.r)))}if(l==="*")if(n>50)n=B.av.fQ(51)
-else if(n<-50)n=-B.av.fQ(51)
-i=a1.a.d
+m=B.av.fQ(B.c.P(Math.pow(10,a1.a.r)))}i=a1.a.d
 l=i[B.av.fQ(i.length)]
+if(l==="*")if(n>50)n=B.av.fQ(51)
+else if(n<-50)n=-B.av.fQ(51)
 i=l==="/"
 if(i||l==="%"){if(m===0)m=B.av.fQ(9)+1
 if(l==="%"){m=B.av.fQ(9)+1
