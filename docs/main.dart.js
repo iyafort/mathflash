@@ -65601,7 +65601,6 @@ k=B.av.fQ(B.c.P(Math.pow(10,a3.a.r)))}g=a3.a.d
 j=g[B.av.fQ(g.length)]
 if(j==="*")if(l>50)l=B.av.fQ(51)
 else if(l<-50)l=-B.av.fQ(51)
-if(o&&p.n(0,l))break c$0
 g=j==="/"
 if(g||j==="%"){if(k===0)k=B.av.fQ(9)+1
 if(j==="%"){k=B.av.fQ(9)+1
@@ -65619,7 +65618,8 @@ else b=!1
 a=b?-1:1
 a0=d*(g+1)*a
 k=d
-l=a0}i=""+l+j+k}while(q.n(0,i))
+l=a0}if(o&&p.n(0,l))break c$0
+i=""+l+j+k}while(q.n(0,i))
 q.E(0,i)
 if(o)p.E(0,l)
 if(j==="*")a1="\xd7"
