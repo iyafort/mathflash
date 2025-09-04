@@ -65539,15 +65539,18 @@ $S:61}
 A.a8o.prototype={
 $0(){var s,r=this.a,q=this.b
 r.e=A.c([q],t.s)
-r.d=30
-s=q==="/"
-r.r=s||q==="*"||q==="+"||q==="-"?2:1
+s=q==="*"
+if(s||q==="/")r.d=20
+else r.d=30
+if(s)r.r=2
+else if(q==="/"||q==="+"||q==="-")r.r=2
+else r.r=1
 r.w=1
 r.f=8000
 r.x=5
 r.y=!0
 r.z=!1
-r.Q=s},
+r.Q=q==="/"},
 $S:0}
 A.a8p.prototype={
 $1(a){var s=this.a,r=s.d,q=s.e,p=s.f,o=s.r,n=s.w,m=s.x,l=s.y,k=s.z
