@@ -67598,17 +67598,15 @@ $0(){this.a.w=B.c.a5(this.b)},
 $S:0}
 A.aaq.prototype={
 $2(a,b){var s=this.a,r=s.x,q=t.p
-return A.d7(A.c([B.N5,A.eF(A.c([B.iB,A.hd(A.GG(2,B.f.i(r),5,1,new A.aap(s,b),r),1),B.vC],q),B.W,B.T,B.z)],q),B.ad,B.T,B.z)},
+return A.d7(A.c([B.N5,A.eF(A.c([B.iB,A.hd(A.GG(1,B.f.i(r),5,1,new A.aap(s,b),r),1),B.vC],q),B.W,B.T,B.z)],q),B.ad,B.T,B.z)},
 $S:42}
 A.aap.prototype={
 $1(a){this.b.$1(new A.aao(this.a,a))},
 $S:16}
 A.aao.prototype={
-$0(){var s,r=this.b
-if(r<=2)this.a.x=1
-else{s=this.a
-if(r<=4)s.x=3
-else s.x=5}},
+$0(){var s=this.a
+if(this.b<=3)s.x=1
+else s.x=5},
 $S:0}
 A.aak.prototype={
 $2(a,b){var s=null,r=this.a
@@ -67997,7 +67995,7 @@ if(n<q&&o>=360){m=Math.min(n,q)
 q=225>m?m:B.c.c1(p,225,m)}else q=225>q?q:B.c.c1(p,225,q)
 l=a.kB(a6,a4,s)
 k=a6===a4
-j=a.a.w===3?1.5:1.3
+j=a.a.w===5?1.5:1.3
 i=a.kv(q,k?l*j:l,a8)
 a3=i.k(0,"width")
 a3.toString
@@ -68056,7 +68054,7 @@ n=a5.b.U(0,n.gu(n))
 return A.Hk(A.mK(a3.oF(a6,!1,a7),1-o),new A.q(-s*n,0))}else{k=a6-1
 j=a3.kB(a6,m,o)
 i=a3.kB(k,m,o)
-h=a3.a.w===3?1.5:1.3
+h=a3.a.w===5?1.5:1.3
 g=a6===m?j*h:j
 f=k===m?i*h:i
 a5=a3.y
@@ -68088,7 +68086,7 @@ n=a5.b.U(0,n.gu(n))
 return A.Hk(A.mK(a3.oF(a6,!1,a7),1-o),new A.q(s*n,0))}else{k=a6+1
 j=a3.kB(a6,m,o)
 i=a3.kB(k,m,o)
-h=a3.a.w===3?1.5:1.3
+h=a3.a.w===5?1.5:1.3
 g=a6===m?j*h:j
 f=k===m?i*h:i
 a5=a3.y
@@ -68129,7 +68127,7 @@ if(k==="right"){i=a9.a.w-1
 h=j+i
 if(h>=0&&h<a9.d.length){g=a9.kB(i,s,r)
 f=i===s
-e=a9.a.w===3?1.5:1.3
+e=a9.a.w===5?1.5:1.3
 d=a9.kv(p,f?g*e:g,b3)
 b2=d.k(0,"width")
 b2.toString
@@ -68151,7 +68149,7 @@ a2=f?A.c([new A.fo(2,B.e_,B.l.rf(0.2),B.hV,5)],t.sq):b0
 b1.push(A.Hk(A.mK(A.a4V(A.cF(b0,a9.F5(h,b2,r),b0,new A.d5(b0,b0,a,a1,a2,new A.j0(B.bp,B.dW,B.bz,c,b0,b0),B.am),r,new A.az(q,0,q,0),new A.az(k,k,k,k),b2),1),a0),new A.q(-(b2+q*2)*j,0)))}}else{h=j-1
 if(h>=0&&h<a9.d.length){g=a9.kB(0,s,r)
 f=0===s
-e=a9.a.w===3?1.5:1.3
+e=a9.a.w===5?1.5:1.3
 d=a9.kv(p,f?g*e:g,b3)
 k=d.k(0,"width")
 k.toString
