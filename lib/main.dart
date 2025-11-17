@@ -717,15 +717,13 @@ class _OpeningScreenState extends State<OpeningScreen> {
                     value: flashcardsOnScreen.toDouble(),
                     min: 1,
                     max: 5,
-                    divisions: 2, // Only 3 divisions for values 1, 3, 5
+                    divisions: 1, // Only 1 division for values 1 and 5
                     label: flashcardsOnScreen.toString(),
                     onChanged: (double value) {
                       setInnerState(() {
-                        // Snap to nearest valid value: 1, 3, or 5
-                        if (value <= 2) {
+                        // Snap to nearest valid value: 1 or 5
+                        if (value <= 3) {
                           flashcardsOnScreen = 1;
-                        } else if (value <= 4) {
-                          flashcardsOnScreen = 3;
                         } else {
                           flashcardsOnScreen = 5;
                         }
@@ -1118,6 +1116,8 @@ class _FlashCardAppScreenState extends State<FlashCardAppScreen>
   bool _isPaused = false; // Track if user manually paused
   bool _isTimerRunning = false; // Track if timer is actively running
   int _remainingTimeOnPause = 0; // Track remaining time when paused
+  bool _timerHiddenAfterCompletion =
+      false; // Hide timer after last card timeout
 
   @override
   void initState() {
@@ -1593,6 +1593,8 @@ class _FlashCardAppScreenState extends State<FlashCardAppScreen>
 
       if (!widget.showAllAtOnce && currentIndex < flashcards.length - 1) {
         _autoAdvanceForward();
+      } else {
+        _handleTimerExpiryOnLastCard();
       }
 
       _autoAdvanceActive = false;
@@ -1659,6 +1661,7 @@ class _FlashCardAppScreenState extends State<FlashCardAppScreen>
       if (_countdownSeconds <= 0) {
         timer.cancel();
         _isTimerRunning = false;
+        _handleTimerExpiryOnLastCard();
       }
     });
   }
@@ -1692,6 +1695,30 @@ class _FlashCardAppScreenState extends State<FlashCardAppScreen>
 
     _remainingTimeOnPause = 0;
     _startCountdownTimer();
+  }
+
+  bool get _isOnLastCard {
+    if (flashcards.isEmpty) return false;
+    return currentIndex >= flashcards.length - 1;
+  }
+
+  void _handleTimerExpiryOnLastCard() {
+    if (!mounted) return;
+    if (widget.showAllAtOnce) return;
+    if (!_isOnLastCard) return;
+    if (_timerHiddenAfterCompletion) return;
+
+    _countdownTimer?.cancel();
+    _autoAdvanceTimer?.cancel();
+    _autoAdvanceActive = false;
+    _isTimerRunning = false;
+    _remainingTimeOnPause = 0;
+
+    setState(() {
+      _timerHiddenAfterCompletion = true;
+      _autoAdvanceCanceled = true;
+      _isPaused = true;
+    });
   }
 
   void _playCountdownSound() async {
@@ -2014,7 +2041,7 @@ class _FlashCardAppScreenState extends State<FlashCardAppScreen>
     // Center card gets a more moderate scale factor for better centering
     bool isCenterCard = index == centerIndex;
     double centerMultiplier =
-        widget.flashcardsOnScreen == 3 ? 1.5 : 1.3; // More conservative scaling
+        widget.flashcardsOnScreen == 5 ? 1.5 : 1.3; // More conservative scaling
     double finalScale =
         isCenterCard ? scaleFactor * centerMultiplier : scaleFactor;
 
@@ -2295,7 +2322,7 @@ class _FlashCardAppScreenState extends State<FlashCardAppScreen>
         bool currentIsCenter = currentPosition == centerIndex;
         bool targetIsCenter = replacedPosition == centerIndex;
 
-        double centerMultiplier = widget.flashcardsOnScreen == 3 ? 1.5 : 1.3;
+        double centerMultiplier = widget.flashcardsOnScreen == 5 ? 1.5 : 1.3;
         double currentScale =
             currentIsCenter
                 ? currentScaleFactor * centerMultiplier
@@ -2414,7 +2441,7 @@ class _FlashCardAppScreenState extends State<FlashCardAppScreen>
         bool currentIsCenter = currentPosition == centerIndex;
         bool targetIsCenter = replacedPosition == centerIndex;
 
-        double centerMultiplier = widget.flashcardsOnScreen == 3 ? 1.5 : 1.3;
+        double centerMultiplier = widget.flashcardsOnScreen == 5 ? 1.5 : 1.3;
         double currentScale =
             currentIsCenter
                 ? currentScaleFactor * centerMultiplier
@@ -2622,7 +2649,7 @@ class _FlashCardAppScreenState extends State<FlashCardAppScreen>
           screenSize.width,
         );
         bool currentIsCenter = phantomIndex == centerIndex;
-        double centerMultiplier = widget.flashcardsOnScreen == 3 ? 1.5 : 1.3;
+        double centerMultiplier = widget.flashcardsOnScreen == 5 ? 1.5 : 1.3;
         double currentScale =
             currentIsCenter
                 ? currentScaleFactor * centerMultiplier
@@ -2706,134 +2733,9 @@ class _FlashCardAppScreenState extends State<FlashCardAppScreen>
           ),
         );
       }
-    } else {
-      // Moving BACKWARD: phantom card slides in from the left to replace [1]
-      int phantomIndex = 0; // Position [1]
-      int newActualIndex = (currentIndex - centerIndex) + phantomIndex - 1;
-      bool newCardExists =
-          newActualIndex >= 0 && newActualIndex < flashcards.length;
-
-      if (newCardExists) {
-        // Use the EXACT same sizing logic as the [1] card in the main cards
-        // Get the same scale factor as the [1] card
-        double currentScaleFactor = _getScaleFactor(
-          phantomIndex,
-          centerIndex,
-          screenSize.width,
-        );
-        bool currentIsCenter = phantomIndex == centerIndex;
-        double centerMultiplier = widget.flashcardsOnScreen == 3 ? 1.5 : 1.3;
-        double currentScale =
-            currentIsCenter
-                ? currentScaleFactor * centerMultiplier
-                : currentScaleFactor;
-
-        // Use the EXACT same _calculateCardDimensions method as main cards
-        Map<String, double> phantomDimensions = _calculateCardDimensions(
-          baseCardWidth,
-          currentScale,
-          screenSize,
-        );
-        double phantomCardWidth = phantomDimensions['width']!;
-        double phantomCardHeight = phantomDimensions['height']!;
-
-        // Calculate the exact position where the [1] card should be
-        // This matches the Row's MainAxisAlignment.center behavior
-        double totalCardsWidth =
-            phantomCardWidth * widget.flashcardsOnScreen +
-            horizontalSpacing * (widget.flashcardsOnScreen - 1);
-        double rowStartX = (screenSize.width - totalCardsWidth) / 2;
-        double cardPosition =
-            rowStartX + phantomIndex * (phantomCardWidth + horizontalSpacing);
-
-        // Calculate starting position (real left edge of the screen)
-        double startOffset = -phantomCardWidth; // Start from real window edge
-        double endOffset =
-            cardPosition; // Final position (exact [1] card position)
-        double slideOffset =
-            startOffset + (endOffset - startOffset) * _animation.value;
-
-        // Calculate colors for the phantom card (same as [1] position)
-        List<Color> phantomColors = _getCardColors(phantomIndex, centerIndex);
-        Color phantomBorderColor = _getCardBorderColor(
-          phantomIndex,
-          centerIndex,
-        );
-
-        // Calculate opacity: fade in from 0 to 100% opacity for [1] and [5] cards
-        double phantomOpacity = _animation.value; // Always fade to 100% opacity
-
-        // Calculate the exact vertical position to match the main cards
-        // The main cards are positioned within a Container with padding inside a Center widget
-        double timerHeight = widget.showAllAtOnce ? 0 : 80; // Timer height
-        double stackHeight =
-            screenSize.height - timerHeight; // Full height of the Stack
-
-        // The Container has vertical padding that affects the main cards' position
-        double verticalPadding =
-            widget.showAllAtOnce
-                ? screenSize.height *
-                    0.02 // Minimal padding in quiz mode
-                : widget.flashcardsOnScreen == 1
-                ? screenSize.height *
-                    0.05 // More padding for flip animation in 1-card mode
-                : screenSize.height *
-                    0.03; // Minimal padding for slide animation in multi-card mode
-
-        // The main cards are centered within the Container's content area (after padding)
-        double containerContentHeight = stackHeight - verticalPadding * 2;
-        double cardCenterY =
-            (containerContentHeight - phantomCardHeight) / 2 + verticalPadding;
-
-        phantomCards.add(
-          Positioned(
-            left: slideOffset,
-            top:
-                cardCenterY, // Position to match the main cards' vertical center
-            child: Opacity(
-              opacity: phantomOpacity, // Fade in from 0 to target opacity
-              child: Transform.scale(
-                scale: 1.0, // Scale already applied in _calculateCardDimensions
-                child: Container(
-                  width: phantomCardWidth,
-                  height: phantomCardHeight,
-                  margin: EdgeInsets.symmetric(horizontal: horizontalSpacing),
-                  padding: EdgeInsets.all(currentIsCenter ? 16.0 : 12.0),
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: phantomColors,
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
-                    border: Border.all(
-                      color: phantomBorderColor,
-                      width: currentIsCenter ? 3.0 : 1.0,
-                    ),
-                    borderRadius: BorderRadius.circular(10.0),
-                    boxShadow:
-                        currentIsCenter
-                            ? [
-                              BoxShadow(
-                                color: Colors.black.withValues(alpha: 0.2),
-                                spreadRadius: 2,
-                                blurRadius: 5,
-                                offset: const Offset(0, 3),
-                              ),
-                            ]
-                            : null,
-                  ),
-                  child: _buildFlashcardContent(
-                    newActualIndex,
-                    phantomCardWidth,
-                    phantomCardHeight,
-                  ),
-                ),
-              ),
-            ),
-          ),
-        );
-      }
     }
+
+    // Skip adding phantom cards on backward animations to prevent glitches
 
     return phantomCards;
   }
@@ -3131,7 +3033,9 @@ class _FlashCardAppScreenState extends State<FlashCardAppScreen>
           child: Column(
             children: [
               // Countdown timer above cards (only in single card mode)
-              if (!widget.showAllAtOnce && widget.scrollTime > 0)
+              if (!widget.showAllAtOnce &&
+                  widget.scrollTime > 0 &&
+                  !_timerHiddenAfterCompletion)
                 Container(
                   width: double.infinity,
                   padding: EdgeInsets.symmetric(vertical: 12, horizontal: 20),
@@ -3329,6 +3233,7 @@ class _FlashCardAppScreenState extends State<FlashCardAppScreen>
                                 // Resume
                                 _autoAdvanceCanceled = false;
                                 _isPaused = false;
+                                _timerHiddenAfterCompletion = false;
                                 _resumeTimer();
                                 _restartAutoAdvance();
                               } else {
