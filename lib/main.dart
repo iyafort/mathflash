@@ -5,6 +5,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'dart:async';
 import 'package:audioplayers/audioplayers.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 // Conditional imports for web and non-web platforms
 import 'web_download_stub.dart'
@@ -1410,6 +1411,23 @@ class _FlashCardAppScreenState extends State<FlashCardAppScreen>
           print('Downloads directory not accessible: $e');
         }
 
+        if (targetDir == null && Platform.isMacOS) {
+          final home = Platform.environment['HOME'];
+          if (home != null && home.isNotEmpty) {
+            try {
+              final downloadsDir = Directory('$home/Downloads');
+              if (!await downloadsDir.exists()) {
+                await downloadsDir.create(recursive: true);
+              }
+              if (await downloadsDir.exists()) {
+                targetDir = downloadsDir;
+              }
+            } catch (e) {
+              print('Unable to access macOS Downloads folder: $e');
+            }
+          }
+        }
+
         if (targetDir == null) {
           try {
             targetDir = await getApplicationDocumentsDirectory();
@@ -1695,6 +1713,19 @@ class _FlashCardAppScreenState extends State<FlashCardAppScreen>
 
     _remainingTimeOnPause = 0;
     _startCountdownTimer();
+  }
+
+  TextStyle _cardMonospaceStyle(
+    double fontSize, {
+    FontWeight fontWeight = FontWeight.w600,
+    Color? color,
+  }) {
+    final style = GoogleFonts.courierPrime(
+      fontSize: fontSize,
+      fontWeight: fontWeight,
+      height: 1.0,
+    );
+    return color != null ? style.copyWith(color: color) : style;
   }
 
   bool get _isOnLastCard {
@@ -2148,12 +2179,7 @@ class _FlashCardAppScreenState extends State<FlashCardAppScreen>
                         fit: BoxFit.scaleDown,
                         child: Text(
                           numerator,
-                          style: TextStyle(
-                            fontSize: exprFont,
-                            fontFamily: 'Courier',
-                            fontWeight: FontWeight.w600,
-                            height: 1.0,
-                          ),
+                          style: _cardMonospaceStyle(exprFont),
                           textAlign: TextAlign.right,
                           softWrap: false,
                           overflow: TextOverflow.clip,
@@ -2164,12 +2190,7 @@ class _FlashCardAppScreenState extends State<FlashCardAppScreen>
                         fit: BoxFit.scaleDown,
                         child: Text(
                           '$operatorChar     $denominator', // 5 spaces between operator and denominator
-                          style: TextStyle(
-                            fontSize: exprFont,
-                            fontFamily: 'Courier',
-                            fontWeight: FontWeight.w600,
-                            height: 1.0,
-                          ),
+                          style: _cardMonospaceStyle(exprFont),
                           textAlign: TextAlign.right,
                           softWrap: false,
                           overflow: TextOverflow.clip,
@@ -2198,12 +2219,7 @@ class _FlashCardAppScreenState extends State<FlashCardAppScreen>
                                     _formatAnswer(
                                       flashcards[actualIndex]['answer'],
                                     ),
-                                    style: TextStyle(
-                                      fontSize: exprFont,
-                                      fontFamily: 'Courier',
-                                      fontWeight: FontWeight.w600,
-                                      height: 1.0,
-                                    ),
+                                    style: _cardMonospaceStyle(exprFont),
                                     textAlign: TextAlign.right,
                                     softWrap: false,
                                     overflow: TextOverflow.clip,
@@ -2808,12 +2824,7 @@ class _FlashCardAppScreenState extends State<FlashCardAppScreen>
                       fit: BoxFit.scaleDown,
                       child: Text(
                         numerator,
-                        style: TextStyle(
-                          fontSize: exprFont,
-                          fontFamily: 'Courier',
-                          fontWeight: FontWeight.w600,
-                          height: 1.0,
-                        ),
+                        style: _cardMonospaceStyle(exprFont),
                         textAlign: TextAlign.right,
                         softWrap: false,
                         overflow: TextOverflow.clip,
@@ -2824,12 +2835,7 @@ class _FlashCardAppScreenState extends State<FlashCardAppScreen>
                       fit: BoxFit.scaleDown,
                       child: Text(
                         '$operatorChar     $denominator', // 5 spaces between operator and denominator
-                        style: TextStyle(
-                          fontSize: exprFont,
-                          fontFamily: 'Courier',
-                          fontWeight: FontWeight.w600,
-                          height: 1.0,
-                        ),
+                        style: _cardMonospaceStyle(exprFont),
                         textAlign: TextAlign.right,
                         softWrap: false,
                         overflow: TextOverflow.clip,
@@ -2858,12 +2864,7 @@ class _FlashCardAppScreenState extends State<FlashCardAppScreen>
                                   _formatAnswer(
                                     flashcards[actualIndex]['answer'],
                                   ),
-                                  style: TextStyle(
-                                    fontSize: exprFont,
-                                    fontFamily: 'Courier',
-                                    fontWeight: FontWeight.w600,
-                                    height: 1.0,
-                                  ),
+                                  style: _cardMonospaceStyle(exprFont),
                                   textAlign: TextAlign.right,
                                   softWrap: false,
                                   overflow: TextOverflow.clip,
@@ -3515,12 +3516,7 @@ class _FlashCardAppScreenState extends State<FlashCardAppScreen>
                       fit: BoxFit.scaleDown,
                       child: Text(
                         numerator,
-                        style: TextStyle(
-                          fontSize: exprFont,
-                          fontFamily: 'Courier',
-                          fontWeight: FontWeight.w600,
-                          height: 1.0,
-                        ),
+                        style: _cardMonospaceStyle(exprFont),
                         textAlign: TextAlign.right,
                         softWrap: false,
                         overflow: TextOverflow.clip,
@@ -3531,12 +3527,7 @@ class _FlashCardAppScreenState extends State<FlashCardAppScreen>
                       fit: BoxFit.scaleDown,
                       child: Text(
                         '$operatorChar     $denominator', // 5 spaces between operator and denominator
-                        style: TextStyle(
-                          fontSize: exprFont,
-                          fontFamily: 'Courier',
-                          fontWeight: FontWeight.w600,
-                          height: 1.0,
-                        ),
+                        style: _cardMonospaceStyle(exprFont),
                         textAlign: TextAlign.right,
                         softWrap: false,
                         overflow: TextOverflow.clip,
@@ -3563,12 +3554,7 @@ class _FlashCardAppScreenState extends State<FlashCardAppScreen>
                                   _formatAnswer(
                                     flashcards[actualIndex]['answer'],
                                   ),
-                                  style: TextStyle(
-                                    fontSize: exprFont,
-                                    fontFamily: 'Courier',
-                                    fontWeight: FontWeight.w600,
-                                    height: 1.0,
-                                  ),
+                                  style: _cardMonospaceStyle(exprFont),
                                   textAlign: TextAlign.right,
                                   softWrap: false,
                                   overflow: TextOverflow.clip,
