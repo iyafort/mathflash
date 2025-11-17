@@ -1,5 +1,5 @@
 name: mathflash
-description: "A new Flutter project."
+description: "E-Drill Generator"
 publish_to: 'none'
 version: 0.1.0
 
@@ -10,6 +10,7 @@ dependencies:
   flutter:
     sdk: flutter
   path_provider: ^2.1.0
+  audioplayers: ^6.0.0
 
 dev_dependencies:
   flutter_test:
@@ -23,6 +24,7 @@ flutter:
     - assets/Logo.png
     - assets/HowTo.jpg
     - assets/BG.png
+    - assets/sounds/
 
 flutter_launcher_icons:
   android: "launcher_icon"
